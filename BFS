@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
+//Ibrahim Mohammed Ibrahim Sobhy
+struct Item {
+    int weight;
+    int value;
+};
+
+struct algo {
+    string name;
+    string bigO;
+    long long timecomp;
+    int bestWeight;
+    int bestValue;
+};
+
+vector<Item> items;
+int n, W;
+
+void bfsLogic(int& bW, int& bV, long long& steps) {
+    vector<int> wL = { 0 }, vL = { 0 }; steps++;
+    for (int i = 0; i < n; i++) {
+        vector<int> nW, nV;
+        for (size_t j = 0; j < wL.size(); j++) {
+            if (wL[j] + items[i].weight <= W) {
+                nW.push_back(wL[j] + items[i].weight);
+                nV.push_back(vL[j] + items[i].value);
+                steps++;
+            }
+            nW.push_back(wL[j]); nV.push_back(vL[j]); steps++;
+        }
+        wL = nW; vL = nV;
+    }
+    for (size_t i = 0; i < vL.size(); i++) if (vL[i] > bV) { bV = vL[i]; bW = wL[i]; }
+}
+
+algo runBFS() {
+    int bV = 0, bW = 0; long long steps = 0;
+    bfsLogic(bW, bV, steps);
+    return { "BFS", "O(2^n)", steps, bW, bV };
+}
+
+void printResult(algo res) {
+    cout << "\n--- " << res.name << " Result ---\n";
+    cout << "Complexity   : " << res.bigO << endl;
+    cout << "Time Steps   : " << res.timecomp << " (Steps/Nodes)" << endl;
+    cout << "Best Value   : " << res.bestValue << " | Best Weight: " << res.bestWeight << " / " << W << endl;
+}
+
+int main() {
+    cout << "Enter number of items: "; cin >> n;
+    cout << "Enter capacity (W): "; cin >> W;
+    items.resize(n);
+    for (int i = 0; i < n; i++) {
+        cout << "Item [" << i + 1 << "] (Weight Value): ";
+        cin >> items[i].weight >> items[i].value;
+    }
+    
+    algo result = runBFS();
+    printResult(result);
+    
+    return 0;
+}
